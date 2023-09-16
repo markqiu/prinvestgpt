@@ -1,5 +1,5 @@
+import json
 from pprint import pprint
-from pydantic import BaseModel, Field
 from typing import Optional
 from tqdm import tqdm
 import jionlp as jio
@@ -98,15 +98,7 @@ def get_articles_content(content_id: str) -> dict:
 
 
 def prompt_constuctor(question: str) -> str:
-    return f"""
-    作为一个投资原则方面的专家，请用严谨的语气进行说明，如果不知道请回答不知道。我的问题是：
-    {question}
-    """
-
-
-class Knowledge(BaseModel):
-    prompt: str
-    response: str
+    return f"作为一个投资原则方面的专家，请用严谨的语气进行说明，如果不知道请回答不知道。我的问题是：{question}"
 
 
 if __name__ == "__main__":
@@ -126,15 +118,13 @@ if __name__ == "__main__":
     total_pages = meta_info['total_pages']
     total_count = meta_info['total_count']
     pbar = tqdm(desc="帮助中心导出进度", total=total_count, unit="篇")
-    with open("baklib.jsonl", "w", encoding="utf8") as f:
+    with open("baklib.jsonl", "w", encoding="utf8") as outfile:
         while current_page <= total_pages:
             for item in get_articles(page=current_page)['items']:
                 current_article = get_articles_content(item['id'])
                 blocks = current_article['content']["blocks"]
-                content_str = "\n".join([block['data']['text'] for block in blocks if "text" in block['data']])
-                k = Knowledge(prompt=prompt_constuctor(current_article['name']), response=jio.clean_text(content_str))
-                f.write(k.model_dump_json())
-                f.write("\n")
+                k = [{'prompt': prompt_constuctor(current_article['name']), 'response': [[jio.clean_text(block['data']['text']) for block in blocks if "text" in block['data']]]}]
+                outfile.write(json.dumps(k, ensure_ascii=False) + "\n")
                 pbar.update(1)
             current_page += 1
     pbar.close()
