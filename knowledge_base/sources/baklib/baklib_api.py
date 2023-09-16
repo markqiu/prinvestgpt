@@ -106,8 +106,8 @@ def prompt_constuctor(question: str) -> str:
 
 class Knowledge(BaseModel):
     id: str
-    question: str
-    answer: str
+    prompt: str
+    response: str
 
 
 if __name__ == "__main__":
@@ -133,7 +133,7 @@ if __name__ == "__main__":
                 current_article = get_articles_content(item['id'])
                 blocks = current_article['content']["blocks"]
                 content_str = "\n".join([block['data']['text'] for block in blocks if "text" in block['data']])
-                k = Knowledge(id=current_article['id'], question=prompt_constuctor(current_article['name']), answer=jio.clean_text(content_str))
+                k = Knowledge(id=current_article['id'], prompt=prompt_constuctor(current_article['name']), response=jio.clean_text(content_str))
                 f.write(k.model_dump_json())
                 f.write("\n")
                 pbar.update(1)
