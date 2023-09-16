@@ -123,7 +123,7 @@ if __name__ == "__main__":
             for item in get_articles(page=current_page)['items']:
                 current_article = get_articles_content(item['id'])
                 blocks = current_article['content']["blocks"]
-                k = [{'prompt': prompt_constuctor(current_article['name']), 'response': [[jio.clean_text(block['data']['text']) for block in blocks if "text" in block['data']]]}]
+                k = [{'prompt': current_article['name'], 'response': [[jio.clean_text(block['data']['text']) for block in blocks if "text" in block['data']]]}]
                 outfile.write(json.dumps(k, ensure_ascii=False) + "\n")
                 pbar.update(1)
             current_page += 1
