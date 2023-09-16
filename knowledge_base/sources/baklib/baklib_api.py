@@ -1,5 +1,7 @@
 from pprint import pprint
+from time import sleep
 from typing import Optional
+from tqdm import tqdm
 
 import requests
 
@@ -98,19 +100,30 @@ def get_articles_content(content_id: str) -> dict:
 
 if __name__ == "__main__":
     # 返回所有文章列表
-    pprint(get_articles())
+    pprint(get_articles()["meta"])
     # 返回指定栏目ID的文章列表
     # print(get_articles(channel_id="dda792f7-ca9f-4f23-bb55-f8735a42f8f4"))
     # 返回指定文章标题的文章列表
     # print(get_articles(name="在能力圈内投资"))
 
     # 根据文章id，查询文章内容
-    pprint(
-        get_articles_content(content_id="bcbaad2c-9b72-455c-8779-d8f89f9c439a")
-    )
-    channels = get_channels()['items']
-    for channel in channels:
-        print(channel)
-        for item in get_articles(channel_id=channel['id'])['items']:
-            pprint(get_articles_content(item['id']))
-
+    # pprint(
+    #     get_articles_content(content_id="bcbaad2c-9b72-455c-8779-d8f89f9c439a")
+    # )
+    meta_info = get_articles()['meta']
+    current_page = meta_info['current_page']
+    total_pages = meta_info['total_pages']
+    total_count = meta_info['total_count']
+    pbar = tqdm(desc="帮助中心导出进度", total=total_count, unit="篇")
+    while current_page <= total_pages:
+        for item in get_articles(page=current_page)['items']:
+            current_article = get_articles_content(item['id'])
+            with open("baklib.txt", "a") as f:
+                f.write(current_article['name'] + "\n")
+                blocks = current_article['content']["blocks"]
+                content_str = "\n".join([block['data']['text'] for block in blocks if "text" in block['data']])
+                f.write(content_str)
+                f.write("\n")
+            pbar.update(1)
+        current_page += 1
+    pbar.close()
