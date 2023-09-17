@@ -33,7 +33,7 @@ def ddg_search(tosearch):
     return web_content
 
 
-with open("new_cof.yaml", "r", encoding="utf-8") as f:
+with open("../new_cof.yaml", "r", encoding="utf-8") as f:
     config = yaml.load(f, Loader=yaml.FullLoader)
 llm_model = config["MODELS"]["llm_model"]
 embedding_model = config["MODELS"]["embedding_model"]
