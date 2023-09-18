@@ -49,7 +49,7 @@ def test(name: str = "."):
 
 
 @app.command()
-def update(name: str = "test"):
+def export_corpus(export_format: str = "jsonl"):
     """
     更新环境
     """
@@ -58,3 +58,7 @@ def update(name: str = "test"):
         os.system(f"pip install -U -e .[{name}]")
     else:
         os.system(f"pip install -U -e '.[{name}]'")
+
+
+if __name__ == "__main__":
+    app()

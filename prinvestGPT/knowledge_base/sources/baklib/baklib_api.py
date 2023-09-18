@@ -1,14 +1,19 @@
 import json
 from pprint import pprint
 from typing import Optional
+
+import yaml
 from tqdm import tqdm
 import jionlp as jio
 import requests
 
 BASE_URI = "https://www.baklib.com/api/v1"
 
-token = "c0ab1713043e46aa2e38b2d1b772bb8ff2aa92b3ee6239f7e200e3c3f858aca2"
-tenant_id = "a6b89e1d-1764-4fc0-8ec6-510e1250b050"
+
+with open("../../../../new_cof.yaml", "r", encoding="utf-8") as f:
+    config = yaml.load(f, Loader=yaml.FullLoader)
+token = config["KNOWLEDGE_BASE"]["baklib"]["token"]
+tenant_id = config["KNOWLEDGE_BASE"]["baklib"]["tenant_id"]
 
 
 def get_channels(

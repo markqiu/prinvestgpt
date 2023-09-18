@@ -1,1 +1,1 @@
-from .__version__ import VERSION
+from .__about__ import VERSION
