@@ -20,26 +20,54 @@ classifiers = [
   "Programming Language :: Python :: 3.8",
   "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
-  "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: Implementation :: CPython",
-  "Programming Language :: Python :: Implementation :: PyPy",
 ]
-dependencies = []
+dependencies = [
+  "gradio >=3.42.0,<4.0.0",
+  "langchain >=0.0.283,<0.1.0",
+  "pyyaml >=6.0.1,<7.0.0",
+  "duckduckgo-search >=3.8.5,<4.0.0",
+  "PyPDF2 >=3.0.1,<4.0.0",
+  "tiktoken >=0.4.0,<0.5.0",
+  "meilisearch >=0.28.2,<1.0.0",
+  "tqdm >=4.66.1,<5.0.0",
+  "requests>=2.31.0",
+  "pydantic>=2.3.0",
+  "jionlp>=1.5.2,<2.0.0"
+]
+
+[project.optional-dependencies]
+cli = [
+  "typer[all] >=0.9.0,<1.0.0",
+]
+dev = [
+  "prinvestgpt[cli]",
+]
 
 [project.urls]
 Documentation = "https://github.com/markqiu/prinvestgpt#readme"
 Issues = "https://github.com/markqiu/prinvestgpt/issues"
 Source = "https://github.com/markqiu/prinvestgpt"
 
-[tool.hatch.version]
-path = "prinvestGPT/__about__.py"
+[project.scripts]
+pv = "prinvestgpt.__main__:app"
 
-[tool.hatch.envs.default]
+[tool.hatch.envs.default.scripts]
+all = [
+    "hatch run lint:all",
+    "hatch run test:test",
+]
+
+[tool.hatch.version]
+path = "prinvestgpt/__about__.py"
+
+[tool.hatch.envs.test]
 dependencies = [
   "coverage[toml]>=6.5",
   "pytest",
 ]
-[tool.hatch.envs.default.scripts]
+
+[tool.hatch.envs.test.scripts]
 test = "pytest {args:tests}"
 test-cov = "coverage run -m pytest {args:tests}"
 cov-report = [
@@ -73,17 +101,18 @@ fmt = [
   "style",
 ]
 all = [
+  "fmt",
   "style",
   "typing",
 ]
 
 [tool.black]
-target-version = ["py37"]
+target-version = ["py310"]
 line-length = 120
 skip-string-normalization = true
 
 [tool.ruff]
-target-version = "py37"
+target-version = "py310"
 line-length = 120
 select = [
   "A",
@@ -121,6 +150,10 @@ ignore = [
   "S105", "S106", "S107",
   # Ignore complexity
   "C901", "PLR0911", "PLR0912", "PLR0913", "PLR0915",
+  # RUF001 String contains ambiguous `，` (FULLWIDTH COMMA).
+  "RUF001", "RUF003",
+  # Unused function argument
+  "ARG001"
 ]
 unfixable = [
   # Don't touch unused imports
@@ -142,7 +175,7 @@ source_pkgs = ["prinvestgpt", "tests"]
 branch = true
 parallel = true
 omit = [
-  "src/prinvestgpt/__about__.py",
+  "prinvestgpt/__about__.py",
 ]
 
 [tool.coverage.paths]
@@ -155,7 +188,3 @@ exclude_lines = [
   "if __name__ == .__main__.:",
   "if TYPE_CHECKING:",
 ]
-
-
-[project.scripts]
-prinvest = "cli:app"

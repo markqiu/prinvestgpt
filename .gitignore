@@ -160,5 +160,8 @@ cython_debug/
 #.idea/
 
 .idea/
-/scripts/milvus/volumes/
+/scripts/meilisearch/volumes/
 /new_cof.yaml
+
+baklib.jsonl
+baklib.txt
