@@ -36,27 +36,21 @@ dependencies = [
   "jionlp>=1.5.2,<2.0.0"
 ]
 
-[project.optional-dependencies]
-cli = [
-  "typer[all] >=0.9.0,<1.0.0",
-]
-dev = [
-  "prinvestgpt[cli]",
-]
-
 [project.urls]
 Documentation = "https://github.com/markqiu/prinvestgpt#readme"
 Issues = "https://github.com/markqiu/prinvestgpt/issues"
 Source = "https://github.com/markqiu/prinvestgpt"
 
 [project.scripts]
-pv = "prinvestgpt.__main__:app"
 
 [tool.hatch.envs.default.scripts]
-all = [
+check = [
     "hatch run lint:all",
     "hatch run test:test",
 ]
+meis = "hatch run scripts\\meilisearch\\start_server"
+pv = "prinvestgpt.__main__:app"
+install = "pip install -e ."
 
 [tool.hatch.version]
 path = "prinvestgpt/__about__.py"
@@ -90,7 +84,7 @@ dependencies = [
   "ruff>=0.0.243",
 ]
 [tool.hatch.envs.lint.scripts]
-typing = "mypy --install-types --non-interactive {args:src/prinvestgpt tests}"
+typing = "mypy --install-types --non-interactive {args:prinvestgpt tests}"
 style = [
   "ruff {args:.}",
   "black --check --diff {args:.}",
@@ -102,13 +96,13 @@ fmt = [
 ]
 all = [
   "fmt",
-  "style",
   "typing",
 ]
 
 [tool.black]
 target-version = ["py310"]
 line-length = 120
+max-line-length = 120
 skip-string-normalization = true
 
 [tool.ruff]
@@ -151,7 +145,7 @@ ignore = [
   # Ignore complexity
   "C901", "PLR0911", "PLR0912", "PLR0913", "PLR0915",
   # RUF001 String contains ambiguous `，` (FULLWIDTH COMMA).
-  "RUF001", "RUF003",
+  "RUF001", "RUF002", "RUF003",
   # Unused function argument
   "ARG001"
 ]
@@ -179,7 +173,7 @@ omit = [
 ]
 
 [tool.coverage.paths]
-prinvestgpt = ["src/prinvestgpt", "*/prinvestgpt/src/prinvestgpt"]
+prinvestgpt = ["prinvestgpt", "scripts"]
 tests = ["tests", "*/prinvestgpt/tests"]
 
 [tool.coverage.report]

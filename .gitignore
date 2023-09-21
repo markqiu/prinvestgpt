@@ -163,5 +163,10 @@ cython_debug/
 /scripts/meilisearch/volumes/
 /new_cof.yaml
 
+# exported corpus
 baklib.jsonl
 baklib.txt
+
+# meilisearch data
+data.ms/
+dumps/

@@ -1,15 +1,14 @@
 import itertools
 import logging
 import os
-import secrets
 import time
 
 import gradio as gr
+import meilisearch
 import pandas as pd
 import PyPDF2
 import typer
 import yaml
-import meilisearch
 from duckduckgo_search import DDGS
 from langchain.chains import ConversationChain, RetrievalQA
 from langchain.chat_models import ErnieBotChat
@@ -126,7 +125,10 @@ def init_base_embedding_chain(llm_model_class, embedding_model_class, knowledge_
         qa_chain_prompt = PromptTemplate.from_template(template)
         vector_db = meilisearch.Client(url=meilisearch_url, api_key=meilisearch_api_key)
         vector_store = Meilisearch(
-            embedding=embedding_model_class, client=vector_db, index_name="jinniuai", text_key="text"
+            embedding=embedding_model_class,
+            client=vector_db,
+            index_name="jinniuai",
+            text_key="text",
         )
         qa_chain = RetrievalQA.from_chain_type(
             llm=llm_model_class,
@@ -223,7 +225,10 @@ def get_documents(file_src):
 def load_embedding_chain(file_obj=None, url=None, embedding_model=None):
     if embedding_model is None:
         llm_model, embedding_model = init_model(
-            llm_model_name=None, embedding_model_name=None, temperature_value=0.7, max_tokens=2000
+            llm_model_name=None,
+            embedding_model_name=None,
+            temperature_value=0.7,
+            max_tokens=2000,
         )
     if file_obj:
         filepath = file_obj.name
@@ -240,7 +245,7 @@ def load_embedding_chain(file_obj=None, url=None, embedding_model=None):
         docs,
         embedding_model,
         client=meilisearch.Client(url=meilisearch_url, api_key=meilisearch_api_key),
-        index_name="jinniuai"
+        index_name="jinniuai",
     )
     return vector_db, book_name
 
@@ -298,12 +303,24 @@ with block:
             with gr.Accordion("知识库选项", open=False):
                 with gr.Tab("上传"):
                     file = gr.File(
-                        label="上传知识库文件", file_types=[".txt", ".md", ".docx", ".pdf", ".pptx", ".epub", ".xlsx"]
+                        label="上传知识库文件",
+                        file_types=[
+                            ".txt",
+                            ".md",
+                            ".docx",
+                            ".pdf",
+                            ".pptx",
+                            ".epub",
+                            ".xlsx",
+                        ],
                     )
                     init_dataset_upload = gr.Button("应用")
                 with gr.Tab("链接载入"):
                     knowledge_url_box = gr.Textbox(
-                        label="url载入知识库", placeholder="请粘贴你的知识库url", show_label=True, lines=1
+                        label="url载入知识库",
+                        placeholder="请粘贴你的知识库url",
+                        show_label=True,
+                        lines=1,
                     )
                     init_dataset_url = gr.Button("应用")
 
@@ -345,15 +362,23 @@ with block:
                     user_message = chat_bot[-1][0]
                     if llm_model is None or embedding_model is None:
                         llm_model, embedding_model = init_model(
-                            llm_model_name, embedding_model_name, temperature, max_tokens
+                            llm_model_name,
+                            embedding_model_name,
+                            temperature,
+                            max_tokens,
                         )
                     if use_database_flag == "否":
                         output = init_base_chain(
-                            llm_model, history_flag=history_state_value, user_question=user_message
+                            llm_model,
+                            history_flag=history_state_value,
+                            user_question=user_message,
                         )
                     else:
                         output = init_base_embedding_chain(
-                            llm_model, embedding_model, milvus_books_state_class, user_question=user_message
+                            llm_model,
+                            embedding_model,
+                            milvus_books_state_class,
+                            user_question=user_message,
                         )
                 except Exception as e:
                     raise e
@@ -370,13 +395,21 @@ with block:
         init_model,
         inputs=[llm_model_name, embedding_model_name, temperature, max_tokens],
         outputs=[llm_model_state, embedding_model_state],
-    ).then(apply_model_setting, inputs=[llm_model_name, embedding_model_name, chatbot], outputs=[chatbot])
+    ).then(
+        apply_model_setting,
+        inputs=[llm_model_name, embedding_model_name, chatbot],
+        outputs=[chatbot],
+    )
     # 知识库选项
     init_dataset_upload.click(pre_embedding_file, inputs=[chatbot], outputs=[chatbot]).then(
-        load_embedding_chain, inputs=[file, embedding_model_state], outputs=[trash, milvus_books_state]
+        load_embedding_chain,
+        inputs=[file, embedding_model_state],
+        outputs=[trash, milvus_books_state],
     ).then(apply_data, inputs=[chatbot], outputs=[chatbot])
     init_dataset_url.click(pre_embedding_file, inputs=[chatbot], outputs=[chatbot]).then(
-        load_embedding_chain, inputs=[knowledge_url_box, embedding_model_state], outputs=[trash, milvus_books_state]
+        load_embedding_chain,
+        inputs=[knowledge_url_box, embedding_model_state],
+        outputs=[trash, milvus_books_state],
     ).then(apply_data, inputs=[chatbot], outputs=[chatbot])
 
     # 刷新按钮

@@ -4,15 +4,21 @@ import jionlp as jio
 import typer
 from tqdm import tqdm
 
-from prinvestgpt.knowledge_base.sources.baklib.baklib_api import get_articles, get_articles_content
+from prinvestgpt.knowledge_base.sources.baklib.baklib_api import (
+    get_articles,
+    get_articles_content,
+)
 
 app = typer.Typer()
 
 
 @app.command()
-def export(fmt: str = "jsonl"):
+def export(fmt: str = "jsonl", include: str | None = None, exclude: str | None = None):
     """
     导出语料库
+    TODO 名词解释
+    TODO 成长教材
+    TODO 原则库、助手库
     """
     meta_info = get_articles()["meta"]
     current_page = meta_info["current_page"]
