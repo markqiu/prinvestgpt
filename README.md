@@ -11,6 +11,23 @@ hatch env create
 conda create -n prinvestGPT python=3.10
 ```
 
+### 安装开发环境
+自带的命令行工具pv的用法如下：
+```shell
+# 安装开发环境
+hatch run pip install -e .[all]
+```
+## 使用
+1. 如果要部署server，并且需要采用本地知识库，则需要先部署meilisearch。
+```shell
+# 查看帮助
+pv -h
+# 导出帮助中心
+pv corpus export --fmt [txt|jsonl]
+# 启动投资原则问答服务
+pv server start
+```
+
 ## 配置
 配置文件在new_cof.yaml中，主要包括：
 ```yaml
@@ -41,17 +58,4 @@ KNOWLEDGE_BASE:
   baklib:
     token : baklib帮助中心的token
     tenant_id : baklib帮助中心的站点id
-
 ```
-## 使用
-1. 如果要部署server，并且需要采用本地知识库，则需要先部署meilisearch。
-2. 自带的命令行工具pv的用法如下：
-```shell
-# 查看帮助
-pv -h
-# 导出帮助中心
-pv corpus export --fmt [txt|jsonl]
-# 启动投资原则问答服务
-pv server start
-```
-

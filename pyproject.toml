@@ -42,6 +42,7 @@ Issues = "https://github.com/markqiu/prinvestgpt/issues"
 Source = "https://github.com/markqiu/prinvestgpt"
 
 [project.scripts]
+pv = "prinvestgpt.__main__:app"
 
 [tool.hatch.envs.default.scripts]
 check = [
@@ -49,7 +50,6 @@ check = [
     "hatch run test:test",
 ]
 meis = "hatch run scripts\\meilisearch\\start_server"
-pv = "prinvestgpt.__main__:app"
 install = "pip install -e ."
 
 [tool.hatch.version]
