@@ -17,16 +17,33 @@ conda create -n prinvestGPT python=3.10
 # 安装开发环境
 hatch run pip install -e .[all]
 ```
+
+
 ## 使用
-1. 如果要部署server，并且需要采用本地知识库，则需要先部署meilisearch。
+1. 如需要本地知识库，则需要先部署meilisearch。如不打算用本地知识库可跳过。
+```shell
+# https://www.meilisearch.com/docs/learn/getting_started/installation
+# Install Meilisearch
+curl -L https://install.meilisearch.com | sh
+
+# Launch Meilisearch
+./meilisearch
+```
+2. 导出知识库。如不打算用本地知识库可跳过。
+目前只支持baklib，先要在配置文件配置好baklib的token和tenant_id，然后运行以下命令导出知识库。
 ```shell
 # 查看帮助
 pv -h
 # 导出帮助中心
 pv corpus export --fmt [txt|jsonl]
+```
+3. 启动问答服务器的后台
+```shell
 # 启动投资原则问答服务
 pv server start
 ```
+4. 在浏览器启动问答服务器的前台
+[点此打开](http://localhost:7860)
 
 ## 配置
 配置文件在new_cof.yaml中，主要包括：
