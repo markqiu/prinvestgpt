@@ -13,7 +13,7 @@ app = typer.Typer()
 
 
 @app.command()
-def export(fmt: str = "jsonl", include: str | None = None, exclude: str | None = None):
+def export(fmt: str = "jsonl", include: str = None, exclude: str = None):
     """
     导出语料库
     TODO 名词解释

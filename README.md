@@ -2,20 +2,25 @@
 原则投资知识库接入GPT
 
 ## 安装
-基于hatch
+1. 安装hatch
 ```shell
-hatch env create
-```
-或者用conda创建好基础环境，用hatch来管理更新
-```shell
-conda create -n prinvestGPT python=3.10
+pip install pipx
+pipx install hatch
+pipx install hatchling
+pipx ensurepath 
 ```
 
-### 安装开发环境
+2. 用conda创建好基础环境，用hatch来管理更新（因为hatch的hatch-conda包问题还是比较多，而hatch自己并不支持多python环境。如果已经有python3.10的环境，则可以跳过创建那步）
+```shell
+conda create -n python311 python=3.11
+conda activate python311
+```
+
+### 准备开发环境
 自带的命令行工具pv的用法如下：
 ```shell
 # 安装开发环境
-hatch run pip install -e .[all]
+hatch run install
 ```
 
 
