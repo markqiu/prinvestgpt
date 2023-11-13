@@ -31,7 +31,7 @@ RUN apt-get purge -y \
   && rm -rf /var/lib/apt/lists/*
 
 # Copying actual application
-COPY . /app/src/
+COPY platform /app/src/
 RUN poetry install --only main
 
 CMD ["/usr/local/bin/python", "-m", "reworkd_platform"]

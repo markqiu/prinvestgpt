@@ -128,7 +128,7 @@ class ToolsResponse(BaseModel):
     tools: List[ToolModel]
 
 
-@router.get("/tools")
+@router.get("tools")
 async def get_user_tools() -> ToolsResponse:
     tools = get_external_tools()
     formatted_tools = [
