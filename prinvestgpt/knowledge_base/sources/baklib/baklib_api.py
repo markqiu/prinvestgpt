@@ -1,19 +1,19 @@
+from typing import Union
+
 import requests
-import yaml
+
+from prinvestgpt import settings
 
 BASE_URI = "https://www.baklib.com/api/v1"
 
-
-with open("./new_cof.yaml", encoding="utf-8") as f:
-    config = yaml.safe_load(f)
-token = config["KNOWLEDGE_BASE"]["baklib"]["token"]
-tenant_id = config["KNOWLEDGE_BASE"]["baklib"]["tenant_id"]
+token = settings.baklib_token
+tenant_id = settings.baklib_tenant_id
 
 
 def get_channels(
-    parent_id: str | None = None,
-    page: int = 1,
-    per_page: int = 10,
+        parent_id: Union[str, None] = None,
+        page: int = 1,
+        per_page: int = 10,
 ) -> dict:
     """
     获取baklib栏目列表
@@ -44,11 +44,11 @@ def get_channels(
 
 
 def get_articles(
-    channel_id: str | None = None,
-    name: str | None = None,
-    identifier: str | None = None,
-    page: int = 1,
-    per_page: int = 10,
+        channel_id: Union[str, None] = None,
+        name: Union[str, None] = None,
+        identifier: Union[str, None] = None,
+        page: int = 1,
+        per_page: int = 10,
 ) -> dict:
     """
     获取baklib文章列表

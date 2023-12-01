@@ -2,13 +2,14 @@ import itertools
 import logging
 import os
 import time
+from typing import Union
 
+import PyPDF2
 import gradio as gr
+import gradio_user_history as gr_user_history
 import meilisearch
 import pandas as pd
-import PyPDF2
 import typer
-import yaml
 from duckduckgo_search import DDGS
 from langchain.chains import ConversationChain, RetrievalQA
 from langchain.chat_models import ErnieBotChat
@@ -18,17 +19,26 @@ from langchain.prompts import PromptTemplate
 from langchain.vectorstores import Meilisearch
 from tqdm import tqdm
 
+from prinvestgpt import settings
+
 app = typer.Typer()
 
-with open("./new_cof.yaml", encoding="utf-8") as f:
-    config = yaml.safe_load(f)
-llm_model_config = config["MODELS"]["llm_model"]
-embedding_model_config = config["MODELS"]["embedding_model"]
-ernie_client_id = config["API"]["ernie_client_id"]
-ernie_client_secret = config["API"]["ernie_client_secret"]
-openai_api_key = config["API"]["openai_api_key"]
-meilisearch_url = config["meilisearch"]["url"]
-meilisearch_api_key = config["meilisearch"]["api_key"]
+llm_model_config = settings.llm_model_config
+embedding_model_config = settings.embedding_model_config
+ernie_client_id = settings.ernie_client_id
+ernie_client_secret = settings.ernie_client_secret
+openai_api_key = settings.openai_api_key
+meilisearch_url = settings.meilisearch_url
+meilisearch_api_key = settings.meilisearch_api_key
+
+
+# => Inject gr.OAuthProfile
+def generate(prompt: str, profile: Union[gr.OAuthProfile, None]):
+    image = ...
+
+    # => Save generated image(s)
+    gr_user_history.save_image(label=prompt, image=image, profile=profile)
+    return image
 
 
 # llm
@@ -82,7 +92,7 @@ def init_model(llm_model_name, embedding_model_name, temperature_value, max_toke
 
 
 def general_template(history_flag=None):
-    prompt_str = """请以一个资深投资AI的角色与人类的对话. The AI is talkative and provides lots of specific
+    prompt_str = """请以一个资深投资AI的角色与人类的对话. The AI provides lots of specific
     details from its context. 如果AI不知道问题的答案，AI会诚实地说"我不知道"，而不是编造一个答案。
     AI在回答问题会注意自己的身份和角度。
 ----
@@ -325,11 +335,11 @@ with block:
                     init_dataset_url = gr.Button("应用")
 
         with gr.Column(scale=4):
-            chatbot = gr.Chatbot(label="文心酱")
+            chatbot = gr.Chatbot(label="小原同学")
             with gr.Row():
                 message = gr.Textbox(
                     label="在此处填写你的问题",
-                    placeholder="我有很多问题想问你......",
+                    placeholder="我有投资想法...",
                     lines=1,
                 )
             with gr.Row():
@@ -337,25 +347,28 @@ with block:
                 # 刷新
                 clear = gr.Button("刷新", variant="secondary")
 
+
             def clear_():
                 chat_bot = []
                 return "", chat_bot, ConversationBufferMemory()
 
+
             def user(user_message, history_flag):
                 return "", [*history_flag, [user_message, None]]
 
+
             def bot(
-                user_message,
-                chat_bot=None,
-                history_state_value=None,
-                temperature=None,
-                max_tokens=None,
-                llm_model=None,
-                embedding_model=None,
-                llm_model_name=None,
-                embedding_model_name=None,
-                use_database_flag=None,
-                milvus_books_state_class=None,
+                    user_message,
+                    chat_bot=None,
+                    history_state_value=None,
+                    temperature=None,
+                    max_tokens=None,
+                    llm_model=None,
+                    embedding_model=None,
+                    llm_model_name=None,
+                    embedding_model_name=None,
+                    use_database_flag=None,
+                    milvus_books_state_class=None,
             ):
                 try:
                     history_state_value = ConversationBufferMemory()
@@ -451,12 +464,16 @@ with block:
         [chatbot],
     )
 
+    with gr.Accordion("历史对话", open=False):
+        gr_user_history.render()
+
 
 @app.command()
 def start():
     # 启动参数
-    block.queue(concurrency_count=config["block"]["concurrency_count"]).launch(
-        debug=config["block"]["debug"],
-        server_name=config["block"]["server_name"],
-        server_port=config["block"]["server_port"],
+    block.queue(concurrency_count=settings.concurrency_count).launch(
+        debug=settings.debug,
+        server_name=str(settings.bind_address),
+        server_port=settings.server_port,
+        root_path=settings.root_path,
     )

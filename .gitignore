@@ -161,7 +161,7 @@ cython_debug/
 
 .idea/
 /scripts/meilisearch/volumes/
-/new_cof.yaml
+/.env
 
 # exported corpus
 baklib.jsonl

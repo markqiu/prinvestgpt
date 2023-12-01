@@ -2,20 +2,16 @@ import logging
 import platform
 
 import typer
-from dotenv import load_dotenv
 import uvicorn
 
 from prinvestgpt.__about__ import __version__
 from prinvestgpt.client import corpus, server
-from prinvestgpt.settings import settings
+from prinvestgpt import settings
 
-load_dotenv()  # take environment variables from .env.
 
 app = typer.Typer()
 app.add_typer(corpus.app, name="corpus")
 app.add_typer(server.app, name="server")
-
-
 
 if platform.system().lower() == "windows":
     OSTYPE = "windows"
@@ -24,12 +20,13 @@ elif platform.system().lower() == "linux":
 elif platform.system().lower() == "darwin":
     OSTYPE = "macos"
 
+
 @app.command()
 def main() -> None:
     """Entrypoint of the application."""
     uvicorn.run(
         "reworkd_platform.web.application:get_app",
-        workers=settings.workers_count,
+        workers=settings["workers_count"],
         host=settings.host,
         port=settings.port,
         reload=settings.reload,

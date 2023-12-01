@@ -52,7 +52,7 @@ pv server start
 
 ## 配置
 配置文件在new_cof.yaml中，主要包括：
-```yaml
+```dotenv
 API:
   ernie_client_id: 百度千帆的应用接入id
   ernie_client_secret: 百度千帆的应用接入secret
